@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block page %}
+  <h1>Orders for Table {{ pk }}</h1>
+  <ul>
+    {% for order in orders %}
+      <li>Order: {{ order.order_number }}
+        </li>
+        <li>Created at: {{ order.created_at }}</li>
+      <ul>
+        
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Dish</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Price</th>
+            </tr>
+          </thead>
+          {% for order_item in order.orderitem_set.all %}
+          <tbody>
+            <tr>
+              <td>{{ order_item.item.item_name }}</td>
+              <td>{{ order_item.quantity }}</td>
+              <td>{{order_item.item.item_price}}</td>
+            </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+          {% comment %} <li>{{ order_item.item.item_name }} - Quantity: {{ order_item.quantity }}  Price : {{order_item.item.item_price}}</li> {% endcomment %}
+        
+      </ul>
+    {% endfor %}
+  </ul>
+{% endblock %}

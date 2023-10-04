@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block home %}
+    '/menu/{{table}}'
+{% endblock home %}
+{% block orderurl %}
+    '/or/{{table}}'
+{% endblock orderurl %}
+{% block page %}  
+    <div class="container text-center">
+        <p class="fs-1 text-center">Welcome To Our Restaurent</p>
+        <p class="fs-1 text-center fw-bold">Menu </p><br><br>
+        {% for category in data %}
+            <h2>{{ category.name }}</h2> <br>
+            {% for item in category.menu_set.all %}
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">Dish</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity/ADD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.item_description }}</td>
+                        <td>{{ item.item_price }}</td>
+                        <td>
+                            <form method="post" action="{% url 'order' item.id %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="number" class="form-control" name="quantity" value="1" min="1">
+                                    </div>
+                                    <input type="hidden" name="table_number" value={{table}}>
+                                    <div class="col">   
+                                        <button type="submit" class="btn btn-success">Add</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+            {% endfor %}
+            <br>
+        {% endfor %}
+    </div> 
+    
+{% endblock page %}
