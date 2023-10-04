@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
-
+{% load filter %}
+{% block home %}
+    '/menu/{{table}}'
+{% endblock home %}
+{% block orderurl %}
+    '/or/{{table}}'
+{% endblock orderurl %}
 {% block page %}
-  <h1>Orders for Table {{ pk }}</h1>
+  <h1>Orders for Table {{ table }}</h1>
   <ul>
     {% for order in orders %}
       <li>Order: {{ order.order_number }}
@@ -22,14 +28,27 @@
             <tr>
               <td>{{ order_item.item.item_name }}</td>
               <td>{{ order_item.quantity }}</td>
-              <td>{{order_item.item.item_price}}</td>
+              <td>{{ order_item.quantity|calc_total:order_item.item.item_price }}</td>
             </tr>
           </tbody>
           {% endfor %}
         </table>
           {% comment %} <li>{{ order_item.item.item_name }} - Quantity: {{ order_item.quantity }}  Price : {{order_item.item.item_price}}</li> {% endcomment %}
-        
       </ul>
     {% endfor %}
-  </ul>
+    <table class="table-success">
+      <tr>
+        <th scope="col">Total :</th>
+        <th scope="col">INR {{total}}</th>
+      </tr>
+    </table>
+  </ul> 
+  <div>
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+
 {% endblock %}

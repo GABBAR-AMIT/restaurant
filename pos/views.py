@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from menu.models import Category, Menu, OrderItem, Order
+from menu.models import Category, Menu, OrderItem, Order, Kitchen, KitchenItem
 from django.contrib import messages # for showing the message.
 from django.utils import timezone
 from admin_p.models import UserDetails
@@ -31,16 +31,30 @@ def order(request, pk):
         order_item.quantity += quantity
         order_item.save()
         
+        # for kitchen
+        kitchen= Kitchen.objects.get_or_create(table_number=table_number, order_number=order_number)
+        # print(order)
+        kitchen, _ = kitchen
+        order_item, created = KitchenItem.objects.get_or_create(item=item, kitchen=kitchen)
+        order_item.quantity += quantity
+        order_item.save()
         messages.success(request, "Added to order, for full order check the order tab !!" )
         return redirect('menu', pk=table_number)
     
 def orders_for_table(request, pk):
     table=pk
     orders = Order.objects.filter(table_number=pk)
-    return render(request, 'orders_for_table.html', {'orders': orders, 'pk':table})
+
+    # Retrieve messages
+    messages_list = messages.get_messages(request)
+    if orders:
+        for order in orders:
+            total_price = sum(item.quantity * item.item.item_price for item in order.orderitem_set.all())
+        return render(request, 'orders_for_table.html', {'orders': orders, 'table':table, 'total':total_price, 'messages': messages_list})
+    return render(request, 'orders_for_table.html',{'table':table})
 
 def kit(request):
-    items = Order.objects.all()
+    items = Kitchen.objects.all()
     return render(request, 'kitchen.html',{'data':items})
 
 def userdetails(request):
@@ -51,3 +65,24 @@ def userdetails(request):
         user=UserDetails.objects.create(name=name, mobile=mobile, email=email)
         user.save()
     return render(request, 'userfrom.html')
+
+def donee(request, pk):
+    table = pk
+    order = Kitchen.objects.filter(table_number=pk)
+    order.delete()
+    messages.success(request, f"Order for Table {table} is ready, Bon Appetit")
+    return redirect('kitchen')
+
+def pdonee(request, pk):
+    table = pk
+    order = Order.objects.filter(table_number=pk)
+    order.delete()
+    return redirect('bill')
+
+def billDetails(request):
+    items = Order.objects.all()
+    if items:
+        for order in items:
+            total_price = sum(item.quantity * item.item.item_price for item in order.orderitem_set.all())
+        return render(request, 'pos.html',{'data':items, 'total':total_price})
+    return render(request, 'pos.html')

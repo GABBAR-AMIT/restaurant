@@ -1,21 +1,6 @@
 {% extends 'base.html' %} {% block page %}
 
 <h1>Kitchen Orders</h1>
-{% comment %} <ul>
-  
-  <li>Order Number: {{ order.order_number }}</li>
-  <li>Table Number: {{ order.table_number }}</li>
-  <li>Created at: {{ order.created_at }}</li>
-  <li>Items:</li>
-  <ul>
-    {% for order_item in order.orderitem_set.all %}
-    <li>
-      {{ order_item.item.item_name }} - Quantity: {{ order_item.quantity }}
-    </li>
-    {% endfor %}
-  </ul>
-  {% endfor %}
-</ul> {% endcomment %}
 <div class="row">
     {% for order in data %}
     <div class="col-sm-4">
@@ -28,16 +13,16 @@
                 <li>Created at: {{ order.created_at }}</li>
                 <li>Items:</li>
                 <ul>
-                    {% for order_item in order.orderitem_set.all %}
+                    {% for order_item in order.kitchenitem_set.all %}
                     <li>
                     {{ order_item.item.item_name }} - Quantity: {{ order_item.quantity }}
                     </li>
                     {% endfor %}
                 </ul>
             </ul>
-          </h5>
+          </h5><br>
           
-          <a href="#" class="btn btn-primary">Done</a>
+          <a href="/done/{{order.table_number}}" class="btn btn-primary form-control">Done</a>
         </div>
       </div>
     </div>

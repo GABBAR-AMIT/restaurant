@@ -28,3 +28,17 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Menu, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
+    
+class Kitchen(models.Model):
+    table_number = models.IntegerField()
+    items = models.ManyToManyField(Menu, through='KitchenItem')
+    order_number = models.CharField(max_length=10, unique=True, default='N/A')
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Kitchen Order {self.order_number} - Table {self.table_number}"
+
+class KitchenItem(models.Model):
+    kitchen = models.ForeignKey(Kitchen, on_delete=models.CASCADE)
+    item = models.ForeignKey(Menu, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=0)
